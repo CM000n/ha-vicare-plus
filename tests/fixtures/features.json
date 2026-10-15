@@ -1,0 +1,2734 @@
+{
+ "data": [
+  {
+   "feature": "device.serial",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "string",
+     "value": "7000000000000000"
+    },
+    "vin": {
+     "type": "VinEntry",
+     "value": {
+      "uid": null,
+      "profile": null
+     }
+    },
+    "materialId": {
+     "type": "MaterialIdEntry",
+     "value": {
+      "uid": null,
+      "profile": null
+     }
+    }
+   },
+   "commands": {
+    "setPrin": {
+     "name": "setPrin",
+     "isExecutable": false,
+     "params": {
+      "vin": {
+       "type": "string",
+       "required": true,
+       "constraints": {}
+      },
+      "vinProfile": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "enum": [
+         "empty",
+         "unspecified",
+         "viessmannProfileOne",
+         "viessmannProfileOneThousandAndFive",
+         "viessmannProfileTwoThousand",
+         "viessmannProfileThreeThousand",
+         "viessmannProfileFourThousand",
+         "viessmannProfileSevenThousand",
+         "viessmannProfileNineThousand",
+         "carrierProfileEightPlusEleven",
+         "toshibaProfileThirty",
+         "carrierProfileTwentyTwo"
+        ]
+       }
+      },
+      "materialIdProfile": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "enum": [
+         "empty",
+         "unspecified",
+         "pSeven",
+         "pEight"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.boiler.pumps.internal",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T10:11:00.168Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "on"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.boiler.sensors.temperature.commonSupply",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.boiler.sensors.temperature.main",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:17:04.476Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 41.6,
+     "unit": "celsius"
+    },
+    "status": {
+     "type": "string",
+     "value": "connected"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.boiler.serial",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "string",
+     "value": "7000000000000000"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.boiler.temperature",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:10:28.489Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 36.7,
+     "unit": "celsius"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.burners",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "enabled": {
+     "type": "array",
+     "value": [
+      "0"
+     ]
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.burners.0",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:10:32.573Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.burners.0.automatic",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:05:05.561Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "ok"
+    },
+    "errorCode": {
+     "type": "number",
+     "value": 0,
+     "unit": ""
+    },
+    "errorDetails": {
+     "type": "string",
+     "value": "error"
+    },
+    "audience": {
+     "type": "string",
+     "value": "internal"
+    }
+   },
+   "commands": {},
+   "deprecated": {
+    "removalDate": "2024-09-15",
+    "info": "none"
+   }
+  },
+  {
+   "feature": "heating.burners.0.errorStatus",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:05:05.561Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "ok"
+    },
+    "errorCode": {
+     "type": "number",
+     "value": 0,
+     "unit": ""
+    },
+    "errorDetails": {
+     "type": "string",
+     "value": "error"
+    },
+    "audience": {
+     "type": "string",
+     "value": "internal"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.burners.0.modulation",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:10:38.871Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 0,
+     "unit": "percent"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.burners.0.statistics",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:05:40.955Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "hours": {
+     "type": "number",
+     "value": 49519,
+     "unit": "hour"
+    },
+    "starts": {
+     "type": "number",
+     "value": 62045,
+     "unit": ""
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "enabled": {
+     "type": "array",
+     "value": [
+      "1",
+      "2"
+     ]
+    },
+    "internal": {
+     "type": "array",
+     "value": []
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.circulation.pump",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.dhw.pumps.circulation.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.dhw.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.frostprotection",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.heating.curve",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.heating.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.modes.active",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.modes.dhw",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.modes.dhwAndHeating",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.modes.forcedNormal",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.modes.forcedReduced",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.modes.heating",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.modes.standby",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.programs.active",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.programs.comfort",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.programs.eco",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.programs.external",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.programs.holiday",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.programs.normal",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.programs.reduced",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.operating.programs.standby",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.sensors.temperature.room",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.0.sensors.temperature.supply",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:17:04.476Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": true
+    },
+    "name": {
+     "type": "string",
+     "value": "Fußbodenheizung  \u0000\u0000\u0000"
+    },
+    "type": {
+     "type": "string",
+     "value": "heatingCircuit"
+    }
+   },
+   "commands": {
+    "setName": {
+     "name": "setName",
+     "isExecutable": true,
+     "params": {
+      "name": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "minLength": 1,
+        "maxLength": 20
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.1.circulation.pump",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "off"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.dhw.pumps.circulation.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.dhw.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.frostprotection",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "off"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.heating.curve",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "shift": {
+     "type": "number",
+     "value": 1,
+     "unit": ""
+    },
+    "slope": {
+     "type": "number",
+     "value": 0.8,
+     "unit": ""
+    }
+   },
+   "commands": {
+    "setCurve": {
+     "name": "setCurve",
+     "isExecutable": true,
+     "params": {
+      "slope": {
+       "type": "number",
+       "required": true,
+       "constraints": {
+        "min": 0.2,
+        "max": 3.5,
+        "stepping": 0.1
+       }
+      },
+      "shift": {
+       "type": "number",
+       "required": true,
+       "constraints": {
+        "min": -13,
+        "max": 40,
+        "stepping": 1
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.1.heating.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "entries": {
+     "type": "Schedule",
+     "value": {
+      "mon": [
+       {
+        "start": "04:00",
+        "end": "23:00",
+        "mode": "normal",
+        "position": 0
+       }
+      ],
+      "tue": [
+       {
+        "start": "04:00",
+        "end": "23:00",
+        "mode": "normal",
+        "position": 0
+       }
+      ],
+      "wed": [
+       {
+        "start": "04:00",
+        "end": "23:00",
+        "mode": "normal",
+        "position": 0
+       }
+      ],
+      "thu": [
+       {
+        "start": "04:00",
+        "end": "23:00",
+        "mode": "normal",
+        "position": 0
+       }
+      ],
+      "fri": [
+       {
+        "start": "04:00",
+        "end": "23:00",
+        "mode": "normal",
+        "position": 0
+       }
+      ],
+      "sat": [
+       {
+        "start": "04:00",
+        "end": "23:00",
+        "mode": "normal",
+        "position": 0
+       }
+      ],
+      "sun": [
+       {
+        "start": "04:00",
+        "end": "23:00",
+        "mode": "normal",
+        "position": 0
+       }
+      ]
+     }
+    },
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {
+    "setSchedule": {
+     "name": "setSchedule",
+     "isExecutable": true,
+     "params": {
+      "newSchedule": {
+       "type": "Schedule",
+       "required": true,
+       "constraints": {
+        "modes": [
+         "normal"
+        ],
+        "maxEntries": 4,
+        "resolution": 10,
+        "defaultMode": "reduced",
+        "overlapAllowed": true
+       }
+      }
+     }
+    },
+    "resetSchedule": {
+     "name": "resetSchedule",
+     "isExecutable": true,
+     "params": {}
+    },
+    "resetDay": {
+     "name": "resetDay",
+     "isExecutable": true,
+     "params": {
+      "day": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "enum": [
+         "mon",
+         "tue",
+         "wed",
+         "thu",
+         "fri",
+         "sat",
+         "sun"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.1.operating.modes.active",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "string",
+     "value": "dhw"
+    }
+   },
+   "commands": {
+    "setMode": {
+     "name": "setMode",
+     "isExecutable": true,
+     "params": {
+      "mode": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "enum": [
+         "dhw",
+         "dhwAndHeating",
+         "forcedNormal",
+         "forcedReduced",
+         "standby"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.1.operating.modes.dhw",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": true
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.modes.dhwAndHeating",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.modes.forcedNormal",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.modes.forcedReduced",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.modes.heating",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.modes.standby",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.programs.active",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "string",
+     "value": "standby"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.programs.comfort",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "temperature": {
+     "type": "number",
+     "value": 22,
+     "unit": "celsius"
+    },
+    "active": {
+     "type": "boolean",
+     "value": false
+    },
+    "demand": {
+     "type": "string",
+     "value": "unknown"
+    }
+   },
+   "commands": {
+    "activate": {
+     "name": "activate",
+     "isExecutable": true,
+     "params": {
+      "temperature": {
+       "type": "number",
+       "required": false,
+       "constraints": {
+        "min": 4,
+        "max": 37,
+        "stepping": 1
+       }
+      }
+     }
+    },
+    "setTemperature": {
+     "name": "setTemperature",
+     "isExecutable": true,
+     "params": {
+      "targetTemperature": {
+       "type": "number",
+       "required": true,
+       "constraints": {
+        "min": 4,
+        "max": 37,
+        "stepping": 1
+       }
+      }
+     }
+    },
+    "deactivate": {
+     "name": "deactivate",
+     "isExecutable": true,
+     "params": {}
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.1.operating.programs.eco",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "temperature": {
+     "type": "number",
+     "value": 19,
+     "unit": "celsius"
+    },
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {
+    "activate": {
+     "name": "activate",
+     "isExecutable": false,
+     "params": {}
+    },
+    "deactivate": {
+     "name": "deactivate",
+     "isExecutable": true,
+     "params": {}
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.1.operating.programs.external",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    },
+    "temperature": {
+     "type": "number",
+     "value": 0,
+     "unit": ""
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.programs.holiday",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.operating.programs.normal",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    },
+    "demand": {
+     "type": "string",
+     "value": "unknown"
+    },
+    "temperature": {
+     "type": "number",
+     "value": 19,
+     "unit": "celsius"
+    }
+   },
+   "commands": {
+    "setTemperature": {
+     "name": "setTemperature",
+     "isExecutable": true,
+     "params": {
+      "targetTemperature": {
+       "required": true,
+       "constraints": {
+        "min": 3,
+        "max": 37,
+        "stepping": 1
+       },
+       "type": "number"
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.1.operating.programs.reduced",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    },
+    "demand": {
+     "type": "string",
+     "value": "unknown"
+    },
+    "temperature": {
+     "type": "number",
+     "value": 3,
+     "unit": "celsius"
+    }
+   },
+   "commands": {
+    "setTemperature": {
+     "name": "setTemperature",
+     "isExecutable": true,
+     "params": {
+      "targetTemperature": {
+       "required": true,
+       "constraints": {
+        "min": 3,
+        "max": 37,
+        "stepping": 1
+       },
+       "type": "number"
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.1.operating.programs.standby",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": true
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.sensors.temperature.room",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.1.sensors.temperature.supply",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:38.006Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 23,
+     "unit": "celsius"
+    },
+    "status": {
+     "type": "string",
+     "value": "connected"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": true
+    },
+    "name": {
+     "type": "string",
+     "value": "Heizkörper       \u0000\u0000\u0000"
+    },
+    "type": {
+     "type": "string",
+     "value": "heatingCircuit"
+    }
+   },
+   "commands": {
+    "setName": {
+     "name": "setName",
+     "isExecutable": true,
+     "params": {
+      "name": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "minLength": 1,
+        "maxLength": 20
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.2.circulation.pump",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T10:11:00.168Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "on"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.dhw.pumps.circulation.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.dhw.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.frostprotection",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "off"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.heating.curve",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "shift": {
+     "type": "number",
+     "value": 1,
+     "unit": ""
+    },
+    "slope": {
+     "type": "number",
+     "value": 1.2,
+     "unit": ""
+    }
+   },
+   "commands": {
+    "setCurve": {
+     "name": "setCurve",
+     "isExecutable": true,
+     "params": {
+      "slope": {
+       "type": "number",
+       "required": true,
+       "constraints": {
+        "min": 0.2,
+        "max": 3.5,
+        "stepping": 0.1
+       }
+      },
+      "shift": {
+       "type": "number",
+       "required": true,
+       "constraints": {
+        "min": -13,
+        "max": 40,
+        "stepping": 1
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.2.heating.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T10:15:32.191Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "entries": {
+     "type": "Schedule",
+     "value": {
+      "mon": [
+       {
+        "start": "06:00",
+        "end": "21:00",
+        "mode": "normal",
+        "position": 1
+       }
+      ],
+      "tue": [
+       {
+        "start": "06:00",
+        "end": "21:00",
+        "mode": "normal",
+        "position": 2
+       }
+      ],
+      "wed": [
+       {
+        "start": "06:00",
+        "end": "21:00",
+        "mode": "normal",
+        "position": 2
+       }
+      ],
+      "thu": [
+       {
+        "start": "06:00",
+        "end": "21:00",
+        "mode": "normal",
+        "position": 1
+       }
+      ],
+      "fri": [
+       {
+        "start": "06:00",
+        "end": "21:00",
+        "mode": "normal",
+        "position": 2
+       }
+      ],
+      "sat": [
+       {
+        "start": "06:00",
+        "end": "21:00",
+        "mode": "normal",
+        "position": 2
+       }
+      ],
+      "sun": [
+       {
+        "start": "06:00",
+        "end": "21:00",
+        "mode": "normal",
+        "position": 2
+       }
+      ]
+     }
+    },
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {
+    "setSchedule": {
+     "name": "setSchedule",
+     "isExecutable": true,
+     "params": {
+      "newSchedule": {
+       "type": "Schedule",
+       "required": true,
+       "constraints": {
+        "modes": [
+         "normal"
+        ],
+        "maxEntries": 4,
+        "resolution": 10,
+        "defaultMode": "reduced",
+        "overlapAllowed": true
+       }
+      }
+     }
+    },
+    "resetSchedule": {
+     "name": "resetSchedule",
+     "isExecutable": true,
+     "params": {}
+    },
+    "resetDay": {
+     "name": "resetDay",
+     "isExecutable": true,
+     "params": {
+      "day": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "enum": [
+         "mon",
+         "tue",
+         "wed",
+         "thu",
+         "fri",
+         "sat",
+         "sun"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.2.operating.modes.active",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "string",
+     "value": "forcedNormal"
+    }
+   },
+   "commands": {
+    "setMode": {
+     "name": "setMode",
+     "isExecutable": true,
+     "params": {
+      "mode": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "enum": [
+         "dhw",
+         "dhwAndHeating",
+         "forcedNormal",
+         "forcedReduced",
+         "standby"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.2.operating.modes.dhw",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.modes.dhwAndHeating",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.modes.forcedNormal",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": true
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.modes.forcedReduced",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.modes.heating",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.modes.standby",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.programs.active",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "string",
+     "value": "normal"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.programs.comfort",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "temperature": {
+     "type": "number",
+     "value": 22,
+     "unit": "celsius"
+    },
+    "active": {
+     "type": "boolean",
+     "value": false
+    },
+    "demand": {
+     "type": "string",
+     "value": "unknown"
+    }
+   },
+   "commands": {
+    "activate": {
+     "name": "activate",
+     "isExecutable": true,
+     "params": {
+      "temperature": {
+       "type": "number",
+       "required": false,
+       "constraints": {
+        "min": 4,
+        "max": 37,
+        "stepping": 1
+       }
+      }
+     }
+    },
+    "setTemperature": {
+     "name": "setTemperature",
+     "isExecutable": true,
+     "params": {
+      "targetTemperature": {
+       "type": "number",
+       "required": true,
+       "constraints": {
+        "min": 4,
+        "max": 37,
+        "stepping": 1
+       }
+      }
+     }
+    },
+    "deactivate": {
+     "name": "deactivate",
+     "isExecutable": true,
+     "params": {}
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.2.operating.programs.eco",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T14:42:37.941Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "temperature": {
+     "type": "number",
+     "value": 18,
+     "unit": "celsius"
+    },
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {
+    "activate": {
+     "name": "activate",
+     "isExecutable": false,
+     "params": {}
+    },
+    "deactivate": {
+     "name": "deactivate",
+     "isExecutable": true,
+     "params": {}
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.2.operating.programs.external",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    },
+    "temperature": {
+     "type": "number",
+     "value": 0,
+     "unit": ""
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.programs.holiday",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.operating.programs.normal",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T14:42:37.941Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": true
+    },
+    "demand": {
+     "type": "string",
+     "value": "unknown"
+    },
+    "temperature": {
+     "type": "number",
+     "value": 18,
+     "unit": "celsius"
+    }
+   },
+   "commands": {
+    "setTemperature": {
+     "name": "setTemperature",
+     "isExecutable": true,
+     "params": {
+      "targetTemperature": {
+       "required": true,
+       "constraints": {
+        "min": 3,
+        "max": 37,
+        "stepping": 1
+       },
+       "type": "number"
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.2.operating.programs.reduced",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T10:22:09.301Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    },
+    "demand": {
+     "type": "string",
+     "value": "unknown"
+    },
+    "temperature": {
+     "type": "number",
+     "value": 18,
+     "unit": "celsius"
+    }
+   },
+   "commands": {
+    "setTemperature": {
+     "name": "setTemperature",
+     "isExecutable": true,
+     "params": {
+      "targetTemperature": {
+       "required": true,
+       "constraints": {
+        "min": 3,
+        "max": 37,
+        "stepping": 1
+       },
+       "type": "number"
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.circuits.2.operating.programs.standby",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.sensors.temperature.room",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": false,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {},
+   "commands": {}
+  },
+  {
+   "feature": "heating.circuits.2.sensors.temperature.supply",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:14:35.787Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 29.5,
+     "unit": "celsius"
+    },
+    "status": {
+     "type": "string",
+     "value": "connected"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.controller.serial",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "string",
+     "value": "7535651401301106"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.dhw",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": true
+    },
+    "status": {
+     "type": "string",
+     "value": "off"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.dhw.charging",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.dhw.pumps.circulation",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "on"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.dhw.pumps.circulation.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "entries": {
+     "type": "Schedule",
+     "value": {
+      "mon": [
+       {
+        "start": "05:00",
+        "end": "09:00",
+        "mode": "on",
+        "position": 0
+       },
+       {
+        "start": "12:00",
+        "end": "13:00",
+        "mode": "on",
+        "position": 1
+       },
+       {
+        "start": "18:00",
+        "end": "21:00",
+        "mode": "on",
+        "position": 2
+       }
+      ],
+      "tue": [
+       {
+        "start": "05:00",
+        "end": "09:00",
+        "mode": "on",
+        "position": 0
+       },
+       {
+        "start": "12:00",
+        "end": "13:00",
+        "mode": "on",
+        "position": 1
+       },
+       {
+        "start": "18:00",
+        "end": "21:00",
+        "mode": "on",
+        "position": 2
+       }
+      ],
+      "wed": [
+       {
+        "start": "05:00",
+        "end": "09:00",
+        "mode": "on",
+        "position": 0
+       },
+       {
+        "start": "12:00",
+        "end": "13:00",
+        "mode": "on",
+        "position": 1
+       },
+       {
+        "start": "18:00",
+        "end": "21:00",
+        "mode": "on",
+        "position": 2
+       }
+      ],
+      "thu": [
+       {
+        "start": "05:00",
+        "end": "09:00",
+        "mode": "on",
+        "position": 0
+       },
+       {
+        "start": "12:00",
+        "end": "13:00",
+        "mode": "on",
+        "position": 1
+       },
+       {
+        "start": "18:00",
+        "end": "21:00",
+        "mode": "on",
+        "position": 2
+       }
+      ],
+      "fri": [
+       {
+        "start": "05:00",
+        "end": "09:00",
+        "mode": "on",
+        "position": 0
+       },
+       {
+        "start": "12:00",
+        "end": "13:00",
+        "mode": "on",
+        "position": 1
+       },
+       {
+        "start": "18:00",
+        "end": "21:00",
+        "mode": "on",
+        "position": 2
+       }
+      ],
+      "sat": [
+       {
+        "start": "05:00",
+        "end": "09:00",
+        "mode": "on",
+        "position": 0
+       },
+       {
+        "start": "12:00",
+        "end": "13:00",
+        "mode": "on",
+        "position": 1
+       },
+       {
+        "start": "18:00",
+        "end": "21:00",
+        "mode": "on",
+        "position": 2
+       }
+      ],
+      "sun": [
+       {
+        "start": "05:00",
+        "end": "09:00",
+        "mode": "on",
+        "position": 0
+       },
+       {
+        "start": "12:00",
+        "end": "13:00",
+        "mode": "on",
+        "position": 1
+       },
+       {
+        "start": "18:00",
+        "end": "21:00",
+        "mode": "on",
+        "position": 2
+       }
+      ]
+     }
+    },
+    "active": {
+     "type": "boolean",
+     "value": true
+    }
+   },
+   "commands": {
+    "setSchedule": {
+     "name": "setSchedule",
+     "isExecutable": true,
+     "params": {
+      "newSchedule": {
+       "type": "Schedule",
+       "required": true,
+       "constraints": {
+        "modes": [
+         "on"
+        ],
+        "maxEntries": 4,
+        "resolution": 10,
+        "defaultMode": "off",
+        "overlapAllowed": true
+       }
+      }
+     }
+    },
+    "resetSchedule": {
+     "name": "resetSchedule",
+     "isExecutable": true,
+     "params": {}
+    },
+    "resetDay": {
+     "name": "resetDay",
+     "isExecutable": true,
+     "params": {
+      "day": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "enum": [
+         "mon",
+         "tue",
+         "wed",
+         "thu",
+         "fri",
+         "sat",
+         "sun"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.dhw.pumps.primary",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "off"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.dhw.schedule",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "entries": {
+     "type": "Schedule",
+     "value": {
+      "mon": [
+       {
+        "start": "05:00",
+        "end": "23:00",
+        "mode": "on",
+        "position": 0
+       }
+      ],
+      "tue": [
+       {
+        "start": "05:00",
+        "end": "23:00",
+        "mode": "on",
+        "position": 0
+       }
+      ],
+      "wed": [
+       {
+        "start": "05:00",
+        "end": "23:00",
+        "mode": "on",
+        "position": 0
+       }
+      ],
+      "thu": [
+       {
+        "start": "05:00",
+        "end": "23:00",
+        "mode": "on",
+        "position": 0
+       }
+      ],
+      "fri": [
+       {
+        "start": "05:00",
+        "end": "23:00",
+        "mode": "on",
+        "position": 0
+       }
+      ],
+      "sat": [
+       {
+        "start": "05:00",
+        "end": "23:00",
+        "mode": "on",
+        "position": 0
+       },
+       {
+        "start": "17:00",
+        "end": "23:10",
+        "mode": "on",
+        "position": 1
+       }
+      ],
+      "sun": [
+       {
+        "start": "05:00",
+        "end": "23:00",
+        "mode": "on",
+        "position": 0
+       }
+      ]
+     }
+    },
+    "active": {
+     "type": "boolean",
+     "value": true
+    }
+   },
+   "commands": {
+    "setSchedule": {
+     "name": "setSchedule",
+     "isExecutable": true,
+     "params": {
+      "newSchedule": {
+       "type": "Schedule",
+       "required": true,
+       "constraints": {
+        "modes": [
+         "on"
+        ],
+        "maxEntries": 4,
+        "resolution": 10,
+        "defaultMode": "off",
+        "overlapAllowed": true
+       }
+      }
+     }
+    },
+    "resetSchedule": {
+     "name": "resetSchedule",
+     "isExecutable": true,
+     "params": {}
+    },
+    "resetDay": {
+     "name": "resetDay",
+     "isExecutable": true,
+     "params": {
+      "day": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "enum": [
+         "mon",
+         "tue",
+         "wed",
+         "thu",
+         "fri",
+         "sat",
+         "sun"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.dhw.sensors.temperature.dhwCylinder",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:06:39.110Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 54,
+     "unit": "celsius"
+    },
+    "status": {
+     "type": "string",
+     "value": "connected"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.dhw.sensors.temperature.hotWaterStorage",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:06:39.110Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 54,
+     "unit": "celsius"
+    },
+    "status": {
+     "type": "string",
+     "value": "connected"
+    }
+   },
+   "commands": {},
+   "deprecated": {
+    "removalDate": "2024-09-15",
+    "info": "replaced by heating.dhw.sensors.temperature.dhwCylinder"
+   }
+  },
+  {
+   "feature": "heating.dhw.sensors.temperature.outlet",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "error"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.dhw.temperature.main",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T14:43:17.495Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 55,
+     "unit": "celsius"
+    }
+   },
+   "commands": {
+    "setTargetTemperature": {
+     "name": "setTargetTemperature",
+     "isExecutable": true,
+     "params": {
+      "temperature": {
+       "type": "number",
+       "required": true,
+       "constraints": {
+        "min": 10,
+        "efficientLowerBorder": 10,
+        "efficientUpperBorder": 60,
+        "max": 60,
+        "stepping": 1
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "feature": "heating.operating.programs.holiday",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": false
+    },
+    "start": {
+     "type": "string",
+     "value": ""
+    },
+    "end": {
+     "type": "string",
+     "value": ""
+    }
+   },
+   "commands": {
+    "changeEndDate": {
+     "name": "changeEndDate",
+     "isExecutable": false,
+     "params": {
+      "end": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "regEx": "^[\\d]{4}-[\\d]{2}-[\\d]{2}$",
+        "sameDayAllowed": false
+       }
+      }
+     }
+    },
+    "schedule": {
+     "name": "schedule",
+     "isExecutable": true,
+     "params": {
+      "start": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "regEx": "^[\\d]{4}-[\\d]{2}-[\\d]{2}$"
+       }
+      },
+      "end": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "regEx": "^[\\d]{4}-[\\d]{2}-[\\d]{2}$",
+        "sameDayAllowed": false
+       }
+      }
+     }
+    },
+    "unschedule": {
+     "name": "unschedule",
+     "isExecutable": true,
+     "params": {}
+    }
+   }
+  },
+  {
+   "feature": "heating.sensors.temperature.outside",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:12:54.355Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 10,
+     "unit": "celsius"
+    },
+    "status": {
+     "type": "string",
+     "value": "connected"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.solar",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "active": {
+     "type": "boolean",
+     "value": true
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.solar.power.cumulativeProduced",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T14:19:01.322Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 79503,
+     "unit": "kilowattHour"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.solar.power.production",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T15:57:39.822Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "day": {
+     "type": "array",
+     "value": [
+      42.853,
+      2.161,
+      0.294,
+      16.908,
+      0.822,
+      3.631,
+      0,
+      0
+     ],
+     "unit": "kilowattHour"
+    },
+    "week": {
+     "type": "array",
+     "value": [],
+     "unit": "kilowattHour"
+    },
+    "month": {
+     "type": "array",
+     "value": [],
+     "unit": "kilowattHour"
+    },
+    "year": {
+     "type": "array",
+     "value": [],
+     "unit": "kilowattHour"
+    },
+    "dayValueReadAt": {
+     "type": "string",
+     "value": "2026-10-15T15:57:38.549Z"
+    },
+    "weekValueReadAt": {
+     "type": "string",
+     "value": ""
+    },
+    "monthValueReadAt": {
+     "type": "string",
+     "value": ""
+    },
+    "yearValueReadAt": {
+     "type": "string",
+     "value": ""
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.solar.pumps.circuit",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T15:07:55.081Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "off"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.solar.rechargeSuppression",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T09:57:38.006Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "status": {
+     "type": "string",
+     "value": "on"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.solar.sensors.temperature.collector",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T19:50:30.233Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 9.3,
+     "unit": "celsius"
+    },
+    "status": {
+     "type": "string",
+     "value": "connected"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "feature": "heating.solar.sensors.temperature.dhw",
+   "gatewayId": "1234567890123456",
+   "deviceId": "0",
+   "timestamp": "2026-10-15T20:12:45.665Z",
+   "isEnabled": true,
+   "isReady": true,
+   "apiVersion": 1,
+   "properties": {
+    "value": {
+     "type": "number",
+     "value": 53.9,
+     "unit": "celsius"
+    },
+    "status": {
+     "type": "string",
+     "value": "connected"
+    }
+   },
+   "commands": {}
+  },
+  {
+   "apiVersion": 1,
+   "isEnabled": true,
+   "isReady": true,
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "feature": "heating.circuits.1.name",
+   "deviceId": "0",
+   "gatewayId": "1234567890123456",
+   "components": [],
+   "commands": {
+    "setName": {
+     "name": "setName",
+     "isExecutable": true,
+     "params": {
+      "name": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "minLength": 1,
+        "maxLength": 20
+       }
+      }
+     }
+    }
+   },
+   "properties": {
+    "name": {
+     "type": "string",
+     "value": "Fußbodenheizung  \u0000\u0000\u0000"
+    }
+   }
+  },
+  {
+   "apiVersion": 1,
+   "isEnabled": true,
+   "isReady": true,
+   "timestamp": "2026-10-15T09:57:32.997Z",
+   "feature": "heating.circuits.2.name",
+   "deviceId": "0",
+   "gatewayId": "1234567890123456",
+   "components": [],
+   "commands": {
+    "setName": {
+     "name": "setName",
+     "isExecutable": true,
+     "params": {
+      "name": {
+       "type": "string",
+       "required": true,
+       "constraints": {
+        "minLength": 1,
+        "maxLength": 20
+       }
+      }
+     }
+    }
+   },
+   "properties": {
+    "name": {
+     "type": "string",
+     "value": "Heizkörper       \u0000\u0000\u0000"
+    }
+   }
+  }
+ ]
+}
