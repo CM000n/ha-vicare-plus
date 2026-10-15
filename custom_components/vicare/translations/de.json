@@ -843,11 +843,15 @@
         "description": "Die Viessmann API erlaubt etwa 1450 Abfragen pro Tag. Jede Aktualisierung kostet eine Abfrage pro Gateway.",
         "data": {
           "scan_interval": "Abfrageintervall",
-          "cycling_threshold": "Brennerstarts pro Stunde ab denen Takten erkannt wird"
+          "cycling_threshold": "Brennerstarts pro Stunde ab denen Takten erkannt wird",
+          "sync_schedules": "Zeitprogramme als Zeitplan-Helfer synchronisieren",
+          "return_temperature_entity": "Externer Rücklauftemperatur-Sensor"
         },
         "data_description": {
           "scan_interval": "Sekunden zwischen zwei Aktualisierungen (60 = Standard, ~1440 Abfragen pro Tag).",
-          "cycling_threshold": "Ab dieser Anzahl Brennerstarts in der letzten Stunde schaltet der Takt-Sensor ein."
+          "cycling_threshold": "Ab dieser Anzahl Brennerstarts in der letzten Stunde schaltet der Takt-Sensor ein.",
+          "sync_schedules": "Legt für jedes Zeitprogramm der Anlage einen schedule-Helfer an und hält beide in beide Richtungen synchron. Änderungen am Helfer werden an die Heizung übertragen.",
+          "return_temperature_entity": "Optional. Die Anlage meldet keinen Rücklauf; ein Anlegefühler am Rücklauf ermöglicht den Sensor Spreizung Vorlauf/Rücklauf."
         }
       }
     }

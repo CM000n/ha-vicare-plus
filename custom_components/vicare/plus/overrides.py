@@ -174,6 +174,17 @@ class ScheduleOverrideManager:
         await self._async_restore_key(key, ctx)
         return True
 
+    async def async_update_original(
+        self, ctx: DeviceContext, feature: str, entries: dict[str, Any]
+    ) -> None:
+        """Replace the program that is restored when the override ends."""
+        key = override_key(ctx, feature)
+        if key not in self._data:
+            raise HomeAssistantError(f"No override active for '{feature}'")
+        self._data[key]["original"] = copy.deepcopy(entries)
+        await self._store.async_save(self._data)
+        self._notify()
+
     @callback
     def async_forget(self, ctx: DeviceContext, feature: str) -> None:
         """Drop an override without restoring, e.g. after a manual change."""

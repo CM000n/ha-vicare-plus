@@ -6,6 +6,7 @@ from typing import Any, override
 
 import voluptuous as vol
 
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.config_entries import (
     SOURCE_REAUTH,
     ConfigEntry,
@@ -16,6 +17,9 @@ from homeassistant.core import DOMAIN as HOMEASSISTANT_DOMAIN, callback
 from homeassistant.helpers import config_entry_oauth2_flow
 from homeassistant.helpers.device_registry import format_mac
 from homeassistant.helpers.selector import (
+    BooleanSelector,
+    EntitySelector,
+    EntitySelectorConfig,
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
@@ -24,7 +28,9 @@ from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 
 from .const import (
     CONF_CYCLING_THRESHOLD,
+    CONF_RETURN_TEMPERATURE,
     CONF_SCAN_INTERVAL,
+    CONF_SYNC_SCHEDULES,
     DEFAULT_CACHE_DURATION,
     DEFAULT_CYCLING_THRESHOLD,
     DOMAIN,
@@ -44,9 +50,14 @@ class ViCareOptionsFlow(OptionsFlowWithReload):
     ) -> ConfigFlowResult:
         """Manage the options."""
         if user_input is not None:
-            return self.async_create_entry(
-                data={key: int(value) for key, value in user_input.items()}
-            )
+            data: dict[str, Any] = {
+                CONF_SCAN_INTERVAL: int(user_input[CONF_SCAN_INTERVAL]),
+                CONF_CYCLING_THRESHOLD: int(user_input[CONF_CYCLING_THRESHOLD]),
+                CONF_SYNC_SCHEDULES: bool(user_input.get(CONF_SYNC_SCHEDULES, True)),
+            }
+            if user_input.get(CONF_RETURN_TEMPERATURE):
+                data[CONF_RETURN_TEMPERATURE] = user_input[CONF_RETURN_TEMPERATURE]
+            return self.async_create_entry(data=data)
         options = self.config_entry.options
         schema = vol.Schema(
             {
@@ -70,6 +81,20 @@ class ViCareOptionsFlow(OptionsFlowWithReload):
                 ): NumberSelector(
                     NumberSelectorConfig(
                         min=1, max=20, step=1, mode=NumberSelectorMode.BOX
+                    )
+                ),
+                vol.Required(
+                    CONF_SYNC_SCHEDULES,
+                    default=options.get(CONF_SYNC_SCHEDULES, True),
+                ): BooleanSelector(),
+                vol.Optional(
+                    CONF_RETURN_TEMPERATURE,
+                    description={
+                        "suggested_value": options.get(CONF_RETURN_TEMPERATURE)
+                    },
+                ): EntitySelector(
+                    EntitySelectorConfig(
+                        domain="sensor", device_class=SensorDeviceClass.TEMPERATURE
                     )
                 ),
             }

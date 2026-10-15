@@ -18,7 +18,7 @@ jobs:
     container: homeassistant/home-assistant:2026.10.1
     steps:
       - uses: actions/checkout@v4
-      - run: pip install pytest
+      - run: pip install pytest pytest-asyncio
       - run: python -m pytest -q
 
   hacs:

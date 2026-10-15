@@ -24,6 +24,7 @@ from custom_components.vicare.plus.entity import (  # noqa: E402
     PlusSelect,
     RuntimeTodaySensor,
     ScheduleSensor,
+    SpreadSensor,
     build_entities,
 )
 from custom_components.vicare.plus.runtime import PlusRuntime  # noqa: E402
@@ -85,22 +86,24 @@ def test_every_platform_builds(runtime: PlusRuntime) -> None:
 
 
 def test_pump_sensors(runtime: PlusRuntime) -> None:
-    """Pump states are exposed as running binary sensors with readable names."""
+    """Pumps not covered by core are running binary sensors with readable names."""
     pumps = {
         e._spec.feature: e
         for e in build_entities(runtime, "binary_sensor")
         if isinstance(e, PlusBinarySensor) and "pump" in e._spec.feature
     }
-    assert len(pumps) == 6
-    assert pumps["heating.dhw.pumps.circulation"].is_on is True
-    assert pumps["heating.dhw.pumps.primary"].is_on is False
-    assert "Zirkulation" in pumps["heating.dhw.pumps.circulation"].name
-    runtimes = [
-        e
+    # All other pumps already exist as core binary sensors.
+    assert set(pumps) == {"heating.boiler.pumps.internal"}
+    internal = pumps["heating.boiler.pumps.internal"]
+    assert internal.name == "Interne Kesselpumpe"
+    assert internal.icon in ("mdi:pump", "mdi:pump-off")
+    runtimes = {
+        e._spec.feature: e
         for e in build_entities(runtime, "sensor")
         if isinstance(e, RuntimeTodaySensor)
-    ]
+    }
     assert len(runtimes) >= 6
+    assert "heating.dhw.pumps.circulation" in runtimes
 
 
 def test_schedule_sensor(runtime: PlusRuntime) -> None:
@@ -133,8 +136,11 @@ def test_operating_mode_select(runtime: PlusRuntime) -> None:
 
 def test_numbers_have_ranges(runtime: PlusRuntime) -> None:
     """Writable temperatures get min, max and step from the API."""
+    ctx = runtime.devices[0]
     numbers = [
-        e for e in build_entities(runtime, "number") if isinstance(e, PlusNumber)
+        PlusNumber(runtime, ctx, spec)
+        for spec in ctx.discovery.commands
+        if spec.platform == "number"
     ]
     assert numbers
     for number in numbers:
@@ -152,3 +158,63 @@ def test_derived_entities(runtime: PlusRuntime) -> None:
         isinstance(e, BurnerCyclingBinarySensor)
         for e in build_entities(runtime, "binary_sensor")
     )
+
+
+def test_sub_devices(runtime: PlusRuntime) -> None:
+    """Entities are clustered into sub-devices linked to the main device."""
+    groups: dict[str, set[str]] = {}
+    for entities in _all(runtime).values():
+        for entity in entities:
+            info = entity.device_info
+            assert info["manufacturer"] == "Viessmann"
+            (identifier,) = info["identifiers"]
+            groups.setdefault(identifier[1], set()).add(entity.name)
+    assert set(groups) == {
+        f"1234567890123456_0_{group}"
+        for group in (
+            "circuit_1",
+            "circuit_2",
+            "dhw",
+            "circulation",
+            "solar",
+            "generator",
+            "system",
+        )
+    }
+    assert "Betriebsart" in groups["1234567890123456_0_circuit_1"]
+    assert "Ertrag gestern" in groups["1234567890123456_0_solar"]
+    assert all(name for names in groups.values() for name in names)
+
+
+def test_spread_needs_return_sensor(
+    runtime: PlusRuntime, features: dict[str, Any]
+) -> None:
+    """Without a return sensor no spread, with an external one it is created."""
+    assert not any(
+        isinstance(e, SpreadSensor) for e in build_entities(runtime, "sensor")
+    )
+    runtime.entry.options = {"return_temperature_entity": "sensor.ruecklauf"}
+    spread = next(
+        e for e in build_entities(runtime, "sensor") if isinstance(e, SpreadSensor)
+    )
+    spread._external_value = 40.0
+    spread._update_values()
+    boiler = features["heating.boiler.sensors.temperature.main"]["properties"]
+    assert spread.native_value == round(boiler["value"]["value"] - 40.0, 1)
+
+
+def test_no_duplicates_of_core(runtime: PlusRuntime) -> None:
+    """Data points of the core integration and aliases are not created twice."""
+    ids = {
+        entity.unique_id for entities in _all(runtime).values() for entity in entities
+    }
+    prefix = "1234567890123456_0-plus-"
+    for key in (
+        "heating.sensors.temperature.outside:value",
+        "heating.boiler.sensors.temperature.main:value",
+        "heating.dhw.sensors.temperature.hotWaterStorage:value",
+        "heating.dhw.sensors.temperature.dhwCylinder:value",
+        "heating.circuits.1.heating.curve:slope",
+    ):
+        assert prefix + key not in ids
+    assert prefix + "heating.dhw.sensors.temperature.hotWaterStorage:status" in ids

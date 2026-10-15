@@ -80,11 +80,49 @@ class ViCareEntity(Entity):
         self._device_serial = device_serial
         self._device_identifier = identifier
         self._model = model
+        self._group_key = unique_id_suffix
+        self._group_component = (
+            (type(component).__name__, component.id) if component else None
+        )
+
+    def _group_device_info(self) -> DeviceInfo | None:
+        """Return the thematic sub-device of ViCare Plus, if any."""
+        if self.hass is None or self.platform is None:
+            return None
+        if (self._device_serial or "").startswith("zigbee-"):
+            return None
+        config_entry = self.platform.config_entry
+        if config_entry is None:
+            return None
+        # Imported here, the plus package imports this module.
+        from .plus.entity import group_device_info  # noqa: PLC0415
+        from .plus.logic import core_group  # noqa: PLC0415
+        from .plus.runtime import get_runtime  # noqa: PLC0415
+
+        runtime = get_runtime(self.hass, config_entry.entry_id)
+        ctx = runtime.find_device(self._device_identifier) if runtime else None
+        if runtime is None or ctx is None:
+            return None
+        kind, component_id = self._group_component or (None, None)
+        group = core_group(self._group_key, kind, component_id)
+        self._group_ctx = (ctx, group)
+        return group_device_info(ctx, group, runtime.language, self.hass)
+
+    @override
+    async def async_added_to_hass(self) -> None:
+        """Move a freshly created sub-device into the area of the main device."""
+        await super().async_added_to_hass()
+        if group_ctx := getattr(self, "_group_ctx", None):
+            from .plus.entity import _inherit_area  # noqa: PLC0415
+
+            _inherit_area(self.hass, *group_ctx)
 
     @property
     @override
     def device_info(self) -> DeviceInfo:
         """Return device info, resolving the zigbee gateway link at add time."""
+        if (group_info := self._group_device_info()) is not None:
+            return group_info
         device_info = DeviceInfo(
             identifiers={(DOMAIN, self._device_identifier)},
             name=self._model,

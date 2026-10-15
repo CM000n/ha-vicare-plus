@@ -38,10 +38,14 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ServiceValidationError
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.restore_state import ExtraStoredData, RestoreEntity
 from homeassistant.util import dt as dt_util
 
+from ..const import DOMAIN
 from ..entity import ViCareCoordinatorEntity, ViCareEntity
 from .logic import (
     WEEKDAYS,
@@ -57,14 +61,19 @@ from .logic import (
     command_name,
     feature_label,
     get_features,
+    group_label,
+    group_of,
     heating_curve_supply,
+    icon_for,
     is_core_covered,
+    is_duplicate,
     is_noise,
     mode_at,
     next_change,
     prop,
     property_name,
     property_value,
+    strip_group_prefix,
     validate_schedule,
 )
 from .overrides import KIND_PERMANENT, write_schedule
@@ -155,8 +164,46 @@ def _as_number(value: float) -> float | int:
 # --------------------------------------------------------------------------
 
 
+OFF_STATES = (False, "off", "inactive", "disabled", "standby")
+
+
+def group_device_info(
+    ctx: DeviceContext,
+    group: str,
+    language: str | None,
+    hass: HomeAssistant | None = None,
+) -> DeviceInfo:
+    """Return the device info of a thematic sub-device."""
+    model = ctx.device.config.getModel().replace("_", " ")
+    label = group_label(group, language, ctx.heatpump)
+    sub_model = label
+    if group.startswith("circuit_"):
+        name = prop(ctx.features.get(f"heating.circuits.{group[8:]}.name"), "name")
+        if isinstance(name, str) and name.strip():
+            sub_model = f"{label} ({clean_string(name)})"
+    info = DeviceInfo(
+        identifiers={(DOMAIN, f"{ctx.identifier}_{group}")},
+        name=f"{model} {label}",
+        manufacturer="Viessmann",
+        model=sub_model,
+    )
+    if hass is not None and (
+        main := dr.async_get(hass).async_get_device(
+            identifiers={(DOMAIN, ctx.identifier)}
+        )
+    ):
+        info["via_device_id"] = main.id
+    return info
+
+
 class PlusEntity(ViCareCoordinatorEntity):
-    """Base class of all coordinator backed ViCare Plus entities."""
+    """Base class of all coordinator backed ViCare Plus entities.
+
+    Entities are clustered into thematic sub-devices (heating circuits, DHW,
+    circulation, solar, boiler, system) linked to the main device.
+    """
+
+    _plus_group: str | None = None
 
     def __init__(
         self,
@@ -176,12 +223,43 @@ class PlusEntity(ViCareCoordinatorEntity):
         )
         self._runtime = runtime
         self._ctx = ctx
-        self._attr_name = name
+        self._group = self._plus_group or group_of(key.split(":", 1)[0])
+        self._attr_name = strip_group_prefix(name, self._group, runtime.language)
         self._attr_entity_registry_enabled_default = enabled
         self._attr_entity_category = category
+        self._icon_off: str | None = None
+        if getattr(self, "_attr_icon", None) is None:
+            icon, self._icon_off = icon_for(key)
+            if icon is not None:
+                self._attr_icon = icon
         self._features: FeatureMap = ctx.features
         self._present = True
         self._update_values()
+
+    @property
+    @override
+    def device_info(self) -> DeviceInfo:
+        return group_device_info(
+            self._ctx, self._group, self._runtime.language, self.hass
+        )
+
+    @property
+    @override
+    def icon(self) -> str | None:
+        if self._icon_off is not None and self._is_off():
+            return self._icon_off
+        return super().icon
+
+    def _is_off(self) -> bool:
+        state = getattr(self, "_attr_is_on", None)
+        if state is None:
+            state = getattr(self, "_attr_native_value", None)
+        return state in OFF_STATES
+
+    @override
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        _inherit_area(self.hass, self._ctx, self._group)
 
     @override
     def _read_value(self) -> None:
@@ -204,6 +282,20 @@ class PlusEntity(ViCareCoordinatorEntity):
         )
         self.async_write_ha_state()
         await self.coordinator.async_request_refresh()
+
+
+@callback
+def _inherit_area(hass: HomeAssistant, ctx: DeviceContext, group: str) -> None:
+    """Put a new sub-device into the area of its main device."""
+    registry = dr.async_get(hass)
+    sub = registry.async_get_device(identifiers={(DOMAIN, f"{ctx.identifier}_{group}")})
+    main = registry.async_get_device(identifiers={(DOMAIN, ctx.identifier)})
+    if sub is None or main is None or sub.area_id or not main.area_id:
+        return
+    # Only for freshly created sub-devices, a later manual choice is kept.
+    if dt_util.utcnow() - sub.created_at > timedelta(minutes=10):
+        return
+    registry.async_update_device(sub.id, area_id=main.area_id)
 
 
 # --------------------------------------------------------------------------
@@ -772,17 +864,29 @@ class ScheduleBoostDuration(ViCareEntity, RestoreNumber):
             device.api,
         )
         self._runtime = runtime
+        self._ctx = ctx
         self._feature = spec.feature
-        self._attr_name = (
+        self._group = group_of(spec.feature)
+        self._attr_name = strip_group_prefix(
             f"{_schedule_base_label(runtime, spec)} "
-            f"{_t(runtime, 'Boost-Dauer', 'boost duration')}"
+            f"{_t(runtime, 'Boost-Dauer', 'boost duration')}",
+            self._group,
+            runtime.language,
         )
         self._attr_entity_registry_enabled_default = _schedule_on_by_default(spec)
         self._attr_native_value = 30
 
+    @property
+    @override
+    def device_info(self) -> DeviceInfo:
+        return group_device_info(
+            self._ctx, self._group, self._runtime.language, self.hass
+        )
+
     @override
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
+        _inherit_area(self.hass, self._ctx, self._group)
         if (data := await self.async_get_last_number_data()) is not None and (
             data.native_value is not None
         ):
@@ -875,13 +979,115 @@ class HeatingCurveSensor(PlusEntity, SensorEntity):
         self._attr_extra_state_attributes = attributes
 
 
+RETURN_FEATURES = (
+    "heating.sensors.temperature.return",
+    "heating.boiler.sensors.temperature.return",
+    "heating.primaryCircuit.sensors.temperature.return",
+    "heating.secondaryCircuit.sensors.temperature.return",
+)
+SUPPLY_FEATURES = (
+    "heating.boiler.sensors.temperature.main",
+    "heating.boiler.sensors.temperature.commonSupply",
+    "heating.sensors.temperature.commonSupply",
+    "heating.secondaryCircuit.sensors.temperature.supply",
+)
+
+
+def _first_value(features: FeatureMap, names: tuple[str, ...]) -> tuple[str, Any]:
+    for name in names:
+        feature = features.get(name)
+        if feature is not None and feature.get("isEnabled", True):
+            value = prop(feature, "value")
+            if isinstance(value, (int, float)):
+                return name, value
+    return "", None
+
+
+class SpreadSensor(PlusEntity, SensorEntity):
+    """Difference between supply/boiler and return temperature.
+
+    Uses a return sensor of the device if it has one, otherwise the external
+    temperature sensor configured in the options.
+    """
+
+    _attr_native_unit_of_measurement = UnitOfTemperature.KELVIN
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 1
+    _attr_icon = "mdi:thermometer-lines"
+
+    def __init__(self, runtime: PlusRuntime, ctx: DeviceContext) -> None:
+        """Initialize the sensor."""
+        self._external = runtime.return_entity
+        self._external_value: float | None = None
+        super().__init__(
+            runtime,
+            ctx,
+            "heating.boiler:spread",
+            _t(
+                runtime,
+                "Kessel Spreizung Vorlauf/Rücklauf",
+                "Boiler supply/return spread",
+            ),
+        )
+
+    @override
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        if self._external is None:
+            return
+        self._read_external()
+        self._update_values()
+        self.async_write_ha_state()
+
+        @callback
+        def _changed(_event: Any) -> None:
+            self._read_external()
+            self._update_values()
+            self.async_write_ha_state()
+
+        self.async_on_remove(
+            async_track_state_change_event(self.hass, [self._external], _changed)
+        )
+
+    @callback
+    def _read_external(self) -> None:
+        state = self.hass.states.get(self._external) if self._external else None
+        try:
+            self._external_value = float(state.state) if state else None
+        except ValueError:
+            self._external_value = None
+        if (
+            state is not None
+            and self._external_value is not None
+            and state.attributes.get("unit_of_measurement")
+            == UnitOfTemperature.FAHRENHEIT
+        ):
+            self._external_value = (self._external_value - 32) / 1.8
+
+    @override
+    def _update_values(self) -> None:
+        supply_feature, supply = _first_value(self._features, SUPPLY_FEATURES)
+        return_feature, ret = _first_value(self._features, RETURN_FEATURES)
+        if ret is None and self._external is not None:
+            return_feature, ret = self._external, self._external_value
+        self._attr_native_value = (
+            None if supply is None or ret is None else round(supply - ret, 1)
+        )
+        self._attr_extra_state_attributes = {
+            "supply_temperature": supply,
+            "supply_source": supply_feature or None,
+            "return_temperature": None if ret is None else round(ret, 1),
+            "return_source": return_feature or None,
+        }
+
+
 class SolarDeltaSensor(PlusEntity, SensorEntity):
     """Temperature difference between solar collector and storage."""
 
     _attr_native_unit_of_measurement = UnitOfTemperature.KELVIN
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_suggested_display_precision = 1
-    _attr_icon = "mdi:solar-power-variant"
+    _attr_icon = "mdi:delta"
 
     def __init__(self, runtime: PlusRuntime, ctx: DeviceContext) -> None:
         """Initialize the sensor."""
@@ -936,6 +1142,11 @@ class BurnerDerivedSensor(PlusEntity, SensorEntity):
             self._attr_device_class = SensorDeviceClass.DURATION
             self._attr_state_class = SensorStateClass.MEASUREMENT
             self._attr_suggested_display_precision = 1
+            self._attr_icon = {
+                "avg_runtime": "mdi:timer-sand",
+                "last_run": "mdi:timer-play-outline",
+                "last_pause": "mdi:timer-pause-outline",
+            }[kind]
         super().__init__(
             runtime, ctx, f"heating.burners.{burner}:{kind}", f"{label} {names[kind]}"
         )
@@ -967,7 +1178,7 @@ class BurnerCyclingBinarySensor(PlusEntity, BinarySensorEntity):
     """Detect short cycling (too many burner starts per hour)."""
 
     _attr_device_class = BinarySensorDeviceClass.PROBLEM
-    _attr_icon = "mdi:sync-alert"
+    _attr_icon = "mdi:sine-wave"
 
     def __init__(self, runtime: PlusRuntime, ctx: DeviceContext, burner: str) -> None:
         """Initialize the binary sensor."""
@@ -1173,14 +1384,14 @@ def build_entities(runtime: PlusRuntime, platform: str) -> list[Entity]:
             continue
         disc = ctx.discovery
         for pspec in disc.properties:
-            if pspec.platform != platform:
+            if pspec.platform != platform or is_duplicate(pspec.key, ctx.features):
                 continue
             if platform == "sensor":
                 entities.append(PlusSensor(runtime, ctx, pspec))
             elif platform == "binary_sensor":
                 entities.append(PlusBinarySensor(runtime, ctx, pspec))
         for cspec in disc.commands:
-            if cspec.platform != platform:
+            if cspec.platform != platform or is_duplicate(cspec.key, ctx.features):
                 continue
             entities.append(
                 {
@@ -1237,6 +1448,10 @@ def _derived_sensors(runtime: PlusRuntime, ctx: DeviceContext) -> list[Entity]:
         and "heating.solar.sensors.temperature.dhw" in features
     ):
         entities.append(SolarDeltaSensor(runtime, ctx))
+    if _first_value(features, SUPPLY_FEATURES)[1] is not None and (
+        runtime.return_entity or _first_value(features, RETURN_FEATURES)[1] is not None
+    ):
+        entities.append(SpreadSensor(runtime, ctx))
     for burner in ctx.burners:
         entities.extend(
             BurnerDerivedSensor(runtime, ctx, burner, kind)

@@ -27,8 +27,49 @@ auch für Geräte, die nie getestet wurden.
   **alle bestehenden Entity-IDs bleiben erhalten**. Automationen, Dashboards und
   Statistiken laufen weiter.
 * Alle Entitäten der Core-Integration sind unverändert enthalten.
+* **Keine doppelten Entitäten:** Datenpunkte, die die Core-Integration schon
+  liefert (z. B. Außentemperatur, Kessel, Brenner, Vorlauf, Heizkurve,
+  Solltemperaturen, Pumpen, Solar, Warmwasserspeicher), legt ViCare Plus nicht
+  noch einmal an. Das gilt auch für Fühler, die die API unter zwei Namen meldet,
+  etwa `dhwCylinder` und `hotWaterStorage` (gleicher Speicherfühler). Ältere
+  Versionen hatten solche Dubletten deaktiviert angelegt. Sie werden beim Start
+  automatisch aus der Entity-Registry entfernt. Die Core-Entität bleibt, weil sie
+  die längere Historie hat.
 * **Keine zusätzlichen API-Aufrufe:** Alle neuen Entitäten lesen aus demselben
   Abruf, den die Integration ohnehin macht.
+
+### Thematische Unter-Geräte
+Statt über 170 Entitäten an einem einzigen Gerät verteilt ViCare Plus alle
+Entitäten, also **auch die der Core-Integration**, auf Unter-Geräte. Diese
+hängen über *Verbunden über* am Hauptgerät:
+
+| Unter-Gerät | Inhalt (Beispiele) |
+|---|---|
+| **Heizkreis 1 / 2 …** (Modell zeigt den Kreisnamen, z. B. *Fußbodenheizung*) | Klima-Entität, Betriebsart, Programme, Soll-Temperaturen, Heizkurve, Vorlauf, Heizkreispumpe, Frostschutz, Zeitprogramm |
+| **Warmwasser** | Warmwasserbereiter, Soll-/Speichertemperatur, Speicherladepumpe, Einmalladung, Hysterese, Zeitprogramm |
+| **Zirkulation** | Zirkulationspumpe, Boost/Dauerbetrieb, Zeitprogramm |
+| **Kessel** (bzw. *Wärmepumpe*) | Kesseltemperatur, Brenner (Status, Modulation, Starts, Stunden), Takterkennung, interne Pumpe, Spreizung, Verbrauch |
+| **Solar** | Kollektor, Solarspeicher, Solarpumpe, Ertrag, Kollektor-Speicher-Differenz |
+| **Anlage** | Außentemperatur, Gerätemeldungen, Firmware/Verbindung, API-Aufrufzähler |
+| *Puffer, Lüftung* | nur bei entsprechenden Anlagen |
+
+* Das Hauptgerät (z. B. *VScotHO1 72*) bleibt als Klammer bestehen und trägt
+  selbst keine Entitäten mehr.
+* Neu angelegte Unter-Geräte übernehmen den **Bereich** des Hauptgeräts. Eine
+  spätere manuelle Zuordnung wird nicht überschrieben.
+* **Entity-IDs ändern sich nicht.** Es wechselt nur die Gerätezuordnung, damit
+  bleiben Automationen, Dashboards und Statistiken unberührt.
+* Weil das Gerät den Kontext liefert, werden Namen gekürzt: aus
+  *Zirkulationspumpe* wird im Gerät *Zirkulation* einfach *Pumpe*.
+* Zigbee-Geräte (z. B. Thermostate über ein Gateway) behalten die Zuordnung der
+  Core-Integration.
+
+### Icons
+Alle Plus-Entitäten bekommen thematisch passende MDI-Icons, viele davon
+zustandsabhängig. Beispiele: Pumpen `mdi:pump`/`mdi:pump-off`, Brenner
+`mdi:fire`/`mdi:fire-off`, Takterkennung `mdi:sine-wave`, Kollektor
+`mdi:solar-panel`, Speicher `mdi:water-boiler`, Heizkurve `mdi:chart-bell-curve-cumulative`,
+Zeitprogramme `mdi:calendar-clock`, Frostschutz `mdi:snowflake-thermometer`.
 
 ### Generische Entitäten aus dem API-Featurebaum
 | API-Daten | Entität |
@@ -41,9 +82,9 @@ auch für Geräte, die nie getestet wurden.
 | `activate`/`deactivate`-Paare (z. B. Eco, Komfort) | `switch` |
 | Befehle ohne Parameter (z. B. Urlaub beenden, Zeitprogramm zurücksetzen) | `button` |
 
-Werte, die die Core-Integration schon liefert, und selten benötigte Werte
-werden zwar angelegt, sind aber standardmäßig **deaktiviert**. Sie lassen sich in
-der Geräteansicht bei Bedarf aktivieren.
+Selten benötigte Werte, etwa einzelne Programm-Flags, Bedarfswerte oder
+Sensorfehler-Status, werden zwar angelegt, sind aber standardmäßig
+**deaktiviert**. Sie lassen sich in der Geräteansicht bei Bedarf aktivieren.
 
 ### Pumpen
 * Status aller Pumpen: interne Kesselpumpe, Heizkreispumpen, Zirkulationspumpe,
@@ -71,6 +112,47 @@ Boost und Dauerbetrieb gibt es analog für die **Warmwasserbereitung**.
 * Services zum Schreiben, Zurücksetzen, Boosten und Wiederherstellen (siehe unten).
   Die Programme werden vor dem Senden gegen die Gerätegrenzen geprüft, also
   maximale Einträge, 10-Minuten-Raster und erlaubte Modi.
+
+#### Zeitprogramme als `schedule`-Helfer
+Jedes Zeitprogramm der Anlage wird als Home-Assistant-**Zeitplan-Helfer**
+(`schedule.*`) angelegt und in **beide Richtungen** synchron gehalten, zum
+Beispiel:
+
+* `schedule.vicare_heizkreis_1_fussbodenheizung_zeitprogramm`
+* `schedule.vicare_heizkreis_2_heizkorper_zeitprogramm`
+* `schedule.vicare_warmwasser_zeitprogramm`
+* `schedule.vicare_zirkulation_zeitprogramm`
+
+So lässt sich das Programm bequem im grafischen Wochen-Editor unter
+*Einstellungen → Geräte & Dienste → Helfer* bearbeiten. Der Helfer ist `on`,
+wenn das Gerät gerade im aktiven Modus ist (z. B. *normal* bzw. *on*), und lässt
+sich damit auch direkt in Automationen verwenden.
+
+**Verhalten:**
+* **Gerät → Helfer:** Beim Start und nach jeder Abfrage wird der Helfer auf das
+  Programm des Geräts gesetzt. Beim Start gewinnt also immer die Anlage.
+* **Helfer → Gerät:** Änderungen im Helfer werden geprüft und an die Anlage
+  gesendet. Dabei gilt:
+  * Zeiten werden auf das **10-Minuten-Raster** der Anlage gerundet.
+  * Überlappende oder aneinanderstoßende Blöcke werden zusammengefasst.
+  * Pro Tag sind höchstens so viele Blöcke erlaubt, wie das Gerät zulässt
+    (beim VScotHO1 typischerweise **4**).
+  * Ist das Programm ungültig, wird **nichts gesendet**. Es erscheint eine
+    Benachrichtigung mit dem Grund, und der Helfer springt auf das Programm des
+    Geräts zurück.
+* **Modi:** Programme mit mehreren aktiven Modi (z. B. *normal* und *comfort*)
+  speichern den Modus pro Block im Feld *Daten* des Helfers
+  (`mode: comfort`). Blöcke ohne Angabe bekommen den Standardmodus. Überlappen
+  sich Einträge am Gerät, gewinnt der höherwertige Modus.
+* **Während Boost/Dauerbetrieb** zeigt der Helfer das *ursprüngliche*
+  Programm. Änderungen daran werden als neues Original gespeichert und nach dem
+  Ende des Overrides an die Anlage gesendet.
+* **Helfer löschen:** Ein gelöschter Helfer wird nicht neu angelegt. Wer ihn
+  zurück möchte, schaltet die Option *Zeitprogramme synchronisieren* aus und
+  wieder ein.
+* Umbenennen, Icon oder Bereich des Helfers dürfen frei geändert werden.
+* Die Synchronisation verursacht keine zusätzlichen Abfragen. Nur Änderungen im
+  Helfer lösen einen Schreibbefehl aus.
 
 ### Boost und Dauerbetrieb im Detail
 
@@ -195,6 +277,8 @@ Daraus folgt:
 * **Takterkennung** (`binary_sensor` *Taktung*): Geht an, wenn der Brenner
   häufiger startet als eingestellt (Standard: 4 Starts pro Stunde).
 * **Solar:** Temperaturdifferenz zwischen Kollektor und Speicher.
+* **Spreizung Vorlauf/Rücklauf** (Kessel): Vorlauf minus Rücklauf. Siehe
+  [Rücklauftemperatur](#rücklauftemperatur).
 * **API-Aufrufe (24 h):** Zähler über ein rollierendes 24-h-Fenster. Viessmann
   erlaubt etwa 1450 Aufrufe pro Tag, der Sensor warnt also rechtzeitig.
 
@@ -296,11 +380,34 @@ Fußbodenheizungen brauchen typisch eine Neigung von 0,3 … 0,8, Heizkörper vo
 1,0 … 1,6. Nach jeder Änderung ein bis zwei Tage abwarten, denn Gebäude reagieren
 träge. Der Sensor zeigt den neuen Sollwert sofort an.
 
+### Rücklauftemperatur
+Ob ein Rücklaufwert verfügbar ist, hängt vom Gerät ab. Wärmepumpen und einige
+Kessel melden `heating.return.temperature` bzw. Primär-/Sekundärkreis-Rückläufe.
+Diese erscheinen dann automatisch als Sensor. **Gas-Brennwertkessel wie der
+VScotHO1 (Vitodens 200-W) haben keinen Rücklauffühler in der API.** Die
+Heizkreise melden nur ihren Vorlauf (bei gemischten Kreisen hinter dem Mischer).
+
+Wer den Rücklauf trotzdem sehen möchte, kann einen **externen
+Temperatursensor** (z. B. einen Anlegefühler am Rücklaufrohr, per Zigbee, ESPHome
+oder 1-Wire) in den Optionen als *Rücklauftemperatur-Sensor* auswählen.
+ViCare Plus legt dann am Kessel den Sensor **Spreizung Vorlauf/Rücklauf** an:
+
+* Vorlauf ist der gemeinsame Vorlauf bzw. die Kesseltemperatur der Anlage.
+* Attribute: verwendete Vor- und Rücklauftemperatur sowie die Quelle des Rücklaufs.
+* °F-Sensoren werden umgerechnet.
+* Bei einem Brennwertkessel sollte der Rücklauf möglichst **unter ca. 55 °C**
+  liegen, damit der Wasserdampf im Abgas kondensiert. Eine große Spreizung
+  (≈ 10–20 K) spricht für gut abgestimmte Pumpen und einen sauberen hydraulischen
+  Abgleich. Eine sehr kleine Spreizung deutet auf eine zu hohe Pumpenleistung
+  oder einen zu hohen Volumenstrom hin.
+
 ### Optionen
 Unter *Einstellungen → Geräte & Dienste → ViCare → Konfigurieren*:
 * **Abfrageintervall** (60 – 3600 s, Standard 60 s, also ca. 1440 Aufrufe pro Tag).
   Mit 90 s bleibt Luft für eigene Befehle und Neustarts.
 * **Schwelle für Takterkennung** (Starts pro Stunde).
+* **Zeitprogramme synchronisieren** mit `schedule`-Helfern (Standard: an).
+* **Rücklauftemperatur-Sensor** (optional, externer Temperatursensor).
 
 ## Services
 
@@ -408,6 +515,10 @@ Aufbau:
 * `plus/runtime.py`: Zustand pro Config-Entry, Befehlsausführung, Tracker.
 * `plus/entity.py`: alle Plus-Entitäten.
 * `plus/overrides.py`: Boost/Dauerbetrieb mit persistenter Wiederherstellung.
+* `plus/schedule_sync.py`: Synchronisation mit den `schedule`-Helfern.
+* Die Zuordnung zu den Unter-Geräten (`group_of`, `core_group`) liegt in
+  `plus/logic.py`. Core-Entitäten werden über einen kleinen Hook in
+  `entity.py` umgehängt.
 * `plus/services.py`: Services.
 
 ---
@@ -419,8 +530,10 @@ Viessmann ViCare integration. It keeps the domain `vicare`, so your existing
 config entry, token and entity IDs stay as they are. On top of that it:
 
 * creates entities for **every** data point and command of the Viessmann API
-  (sensor, binary_sensor, number, select, text, switch, button). Core
-  duplicates start disabled.
+  (sensor, binary_sensor, number, select, text, switch, button). Data points
+  already covered by the core integration are not duplicated, and leftovers
+  from older versions are removed from the entity registry, so the core
+  entity and its history are kept.
 * exposes all **pumps** with daily runtime, and lets you control the
   **circulation pump** through its time program: a boost button with
   configurable duration and a permanent switch, both restored automatically and
@@ -431,8 +544,18 @@ config entry, token and entity IDs stay as they are. On top of that it:
 * derives extra values: target supply temperature from the heating curve and
   its deviation, burner starts, cycling detection, average burner runtime, solar
   collector/tank delta, and a rolling 24 h API call counter.
-* has options for the polling interval (rate-limit friendly) and the cycling
-  threshold.
+* groups **all** entities, including the core ones, into sub-devices: one per
+  heating circuit, plus DHW, circulation, boiler, solar and system. They are
+  linked to the main device and inherit its area. Entity IDs stay unchanged.
+  Names are shortened and icons are themed.
+* mirrors every device time program to a Home Assistant **`schedule` helper**
+  with **two-way sync**. Edits are rounded to 10 minutes, checked against the
+  device limits (e.g. max. 4 slots per day) and sent to the boiler. Invalid
+  edits are reverted and you get a notification.
+* adds a supply/return **spread** sensor. The VScotHO1 has no return sensor in
+  the API, so you can pick an external temperature sensor in the options.
+* has options for the polling interval (rate-limit friendly), the cycling
+  threshold, schedule sync and the return sensor.
 
 Boost and permanent mode work by temporarily rewriting the device time program.
 They only have an effect while the operating mode evaluates that program. For

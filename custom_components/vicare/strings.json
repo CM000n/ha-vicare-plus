@@ -843,11 +843,15 @@
         "description": "The Viessmann API allows about 1450 requests per day. Each poll costs one request per gateway.",
         "data": {
           "scan_interval": "Polling interval",
-          "cycling_threshold": "Burner starts per hour counted as cycling"
+          "cycling_threshold": "Burner starts per hour counted as cycling",
+          "sync_schedules": "Sync time programs to schedule helpers",
+          "return_temperature_entity": "External return temperature sensor"
         },
         "data_description": {
           "scan_interval": "Seconds between two updates (60 = default, ~1440 requests per day).",
-          "cycling_threshold": "Above this number of burner starts in the last hour the cycling sensor turns on."
+          "cycling_threshold": "Above this number of burner starts in the last hour the cycling sensor turns on.",
+          "sync_schedules": "Creates a schedule helper for every time program of the device and keeps both in sync in both directions. Helper edits are written to the heating system.",
+          "return_temperature_entity": "Optional. If the device has no return sensor, a clamp sensor on the return pipe enables the supply/return spread sensor."
         }
       }
     }

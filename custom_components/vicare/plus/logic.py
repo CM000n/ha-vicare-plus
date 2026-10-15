@@ -414,6 +414,29 @@ def is_core_covered(key: str) -> bool:
     return any(pattern.search(key) for pattern in CORE_COVERED)
 
 
+# Data points that report the same sensor as another feature on many devices.
+ALIASES: dict[re.Pattern[str], str] = {
+    re.compile(
+        r"^heating\.dhw\.sensors\.temperature\.dhwCylinder:(value|status)$"
+    ): "heating.dhw.sensors.temperature.hotWaterStorage",
+}
+
+
+def is_duplicate(key: str, features: FeatureMap) -> bool:
+    """Return True if a data point would duplicate an existing entity.
+
+    Core entities win, they usually carry the longer history.
+    """
+    if is_core_covered(key):
+        return True
+    for pattern, original in ALIASES.items():
+        if pattern.search(key):
+            feature = features.get(original)
+            if feature and feature.get("isEnabled", True):
+                return True
+    return False
+
+
 @dataclass(frozen=True)
 class PropertySpec:
     """A readable data point."""
@@ -1011,3 +1034,376 @@ def circuit_room_setpoint(
         if isinstance(temperature, (int, float)) and temperature >= 5:
             return float(temperature), program
     return None, None
+
+
+# --------------------------------------------------------------------------
+# Thematic groups (sub-devices)
+# --------------------------------------------------------------------------
+
+GROUP_SYSTEM = "system"
+GROUP_GENERATOR = "generator"
+GROUP_DHW = "dhw"
+GROUP_CIRCULATION = "circulation"
+GROUP_SOLAR = "solar"
+GROUP_BUFFER = "buffer"
+GROUP_VENTILATION = "ventilation"
+
+_GROUP_PREFIXES: list[tuple[str, str]] = [
+    ("heating.dhw.pumps.circulation", GROUP_CIRCULATION),
+    ("heating.dhw", GROUP_DHW),
+    ("heating.solar", GROUP_SOLAR),
+    ("heating.boiler", GROUP_GENERATOR),
+    ("heating.burner", GROUP_GENERATOR),
+    ("heating.compressor", GROUP_GENERATOR),
+    ("heating.condensor", GROUP_GENERATOR),
+    ("heating.evaporator", GROUP_GENERATOR),
+    ("heating.inverter", GROUP_GENERATOR),
+    ("heating.primaryCircuit", GROUP_GENERATOR),
+    ("heating.secondaryCircuit", GROUP_GENERATOR),
+    ("heating.gas", GROUP_GENERATOR),
+    ("heating.power", GROUP_GENERATOR),
+    ("heating.buffer", GROUP_BUFFER),
+    ("ventilation", GROUP_VENTILATION),
+]
+
+_GROUP_LABELS: dict[str, dict[str, str]] = {
+    "de": {
+        GROUP_SYSTEM: "Anlage",
+        GROUP_GENERATOR: "Kessel",
+        GROUP_DHW: "Warmwasser",
+        GROUP_CIRCULATION: "Zirkulation",
+        GROUP_SOLAR: "Solar",
+        GROUP_BUFFER: "Pufferspeicher",
+        GROUP_VENTILATION: "Lüftung",
+        "circuit": "Heizkreis",
+        "heatpump": "Wärmepumpe",
+    },
+    "en": {
+        GROUP_SYSTEM: "System",
+        GROUP_GENERATOR: "Boiler",
+        GROUP_DHW: "DHW",
+        GROUP_CIRCULATION: "Circulation",
+        GROUP_SOLAR: "Solar",
+        GROUP_BUFFER: "Buffer",
+        GROUP_VENTILATION: "Ventilation",
+        "circuit": "Circuit",
+        "heatpump": "Heat pump",
+    },
+}
+
+# Name prefixes removed from entity names inside a group, the group name is
+# already part of the friendly name through the device.
+_GROUP_STRIP: dict[str, dict[str, tuple[str, ...]]] = {
+    "de": {
+        GROUP_GENERATOR: ("Kessel",),
+        GROUP_DHW: ("Warmwasser",),
+        GROUP_CIRCULATION: ("Zirkulation",),
+        GROUP_SOLAR: ("Solar",),
+        GROUP_BUFFER: ("Pufferspeicher", "Puffer"),
+    },
+    "en": {
+        GROUP_GENERATOR: ("Boiler",),
+        GROUP_DHW: ("DHW circulation", "DHW"),
+        GROUP_CIRCULATION: ("DHW circulation", "Circulation"),
+        GROUP_SOLAR: ("Solar",),
+        GROUP_BUFFER: ("Buffer",),
+    },
+}
+
+
+def group_of(feature: str) -> str:
+    """Return the thematic group of a feature, e.g. circuit_1 or dhw."""
+    parts = feature.split(".")
+    if len(parts) >= 3 and parts[:2] == ["heating", "circuits"] and parts[2].isdigit():
+        if len(parts) > 3 and parts[3] == "dhw":
+            return GROUP_CIRCULATION if "circulation" in feature else GROUP_DHW
+        return f"circuit_{parts[2]}"
+    for prefix, group in _GROUP_PREFIXES:
+        if feature.startswith(prefix):
+            return group
+    return GROUP_SYSTEM
+
+
+def group_label(group: str, language: str | None, heatpump: bool = False) -> str:
+    """Return the display name of a group."""
+    labels = _GROUP_LABELS[_lang(language)]
+    if group.startswith("circuit_"):
+        return f"{labels['circuit']} {group.split('_', 1)[1]}"
+    if group == GROUP_GENERATOR and heatpump:
+        return labels["heatpump"]
+    return labels.get(group, group)
+
+
+def strip_group_prefix(name: str, group: str, language: str | None) -> str:
+    """Remove the group name from the beginning of an entity name."""
+    lang = _lang(language)
+    if group == GROUP_GENERATOR:
+        # Single burner devices: "Brenner 0 Modulation" -> "Brenner Modulation"
+        name = re.sub(r"^(Brenner|Burner) 0\b", r"\1", name)
+    if group.startswith("circuit_"):
+        prefixes: tuple[str, ...] = (group_label(group, language),)
+    else:
+        prefixes = _GROUP_STRIP[lang].get(group, ())
+    for prefix in prefixes:
+        if name == prefix:
+            return "Aktiv" if lang == "de" else "Active"
+        if name.startswith(f"{prefix} "):
+            rest = name[len(prefix) + 1 :]
+            return rest[:1].upper() + rest[1:]
+        # German compounds: "Solarertrag" -> "Ertrag", "Zirkulationspumpe" -> "Pumpe"
+        if (
+            lang == "de"
+            and name.startswith(prefix)
+            and len(name) > len(prefix) + 2
+            and name[len(prefix)].islower()
+        ):
+            rest = name[len(prefix) :]
+            # Linking "s": "Zirkulationspumpe" -> "Pumpe"
+            if prefix.endswith(("ion", "ung", "heit", "keit")) and rest[:1] == "s":
+                rest = rest[1:]
+            return rest[:1].upper() + rest[1:]
+    return name
+
+
+# --------------------------------------------------------------------------
+# Icons
+# --------------------------------------------------------------------------
+
+# (regex on "<feature>:<prop or command>", icon, icon when off)
+ICON_RULES: list[tuple[str, str, str | None]] = [
+    (r"sensors\.temperature[^:]*:status", "mdi:thermometer-alert", None),
+    (
+        r"errorCode|errorDetails|errorStatus|\.messages\.",
+        "mdi:alert-circle-outline",
+        None,
+    ),
+    (r"\.automatic:", "mdi:check-network-outline", None),
+    (r"\.schedule:resetSchedule", "mdi:calendar-refresh", None),
+    (r"\.schedule", "mdi:calendar-clock", None),
+    (r"\.pumps\.circulation:(status|active)", "mdi:water-sync", "mdi:sync-off"),
+    (r"\.(pumps\.\w+|circulation\.pump):(status|active)", "mdi:pump", "mdi:pump-off"),
+    (r"^heating\.burners?\.\d+:active", "mdi:fire", "mdi:fire-off"),
+    (r"^heating\.burners?\.\d+\.modulation", "mdi:fire-circle", None),
+    (r"^heating\.burners?\.\d+\.statistics:starts", "mdi:counter", None),
+    (
+        r"^heating\.burners?\.\d+\.statistics:hours",
+        "mdi:clock-time-eight-outline",
+        None,
+    ),
+    (r"^heating\.burners?", "mdi:fire", None),
+    (r"holiday[^:]*:start", "mdi:airplane-takeoff", None),
+    (r"holiday[^:]*:end", "mdi:airplane-landing", None),
+    (r"holiday[^:]*:unschedule", "mdi:airplane-off", None),
+    (r"holiday", "mdi:airplane", "mdi:airplane-off"),
+    (r"\.operating\.modes\.active", "mdi:cog-transfer-outline", None),
+    (r"\.operating\.modes\.standby", "mdi:power-standby", None),
+    (r"\.operating\.modes\.dhw:", "mdi:water-boiler", "mdi:water-boiler-off"),
+    (r"\.operating\.modes\.dhwAndHeating", "mdi:home-thermometer", None),
+    (r"\.operating\.modes\.forced", "mdi:hand-back-right-outline", None),
+    (r"\.operating\.programs\.comfort", "mdi:sofa-outline", None),
+    (r"\.operating\.programs\.eco", "mdi:leaf", None),
+    (r"\.operating\.programs\.reduced", "mdi:thermometer-low", None),
+    (r"\.operating\.programs\.normal", "mdi:thermometer", None),
+    (r"\.operating\.programs\.standby", "mdi:power-standby", None),
+    (r"\.operating\.programs\.external", "mdi:thermometer-lines", None),
+    (r"\.operating\.programs\.active", "mdi:format-list-bulleted-type", None),
+    (r"frostprotection", "mdi:snowflake-thermometer", None),
+    (r"\.name:", "mdi:rename-outline", None),
+    (r"serial", "mdi:barcode", None),
+    (r"^heating\.circuits\.\d+:active", "mdi:radiator", "mdi:radiator-off"),
+    (r"temperature\.supply", "mdi:thermometer-chevron-up", None),
+    (r"temperature\.return", "mdi:thermometer-chevron-down", None),
+    (r"temperature\.outside", "mdi:home-thermometer-outline", None),
+    (r"^heating\.dhw:(active|status)", "mdi:water-boiler", "mdi:water-boiler-off"),
+    (r"^heating\.dhw\.charging", "mdi:water-boiler-alert", None),
+    (r"^heating\.dhw\.temperature", "mdi:water-thermometer", None),
+    (r"^heating\.dhw\.sensors", "mdi:water-thermometer-outline", None),
+    (r"^heating\.dhw", "mdi:water-boiler", None),
+    (r"^heating\.solar\.sensors\.temperature\.collector", "mdi:solar-panel", None),
+    (r"^heating\.solar\.sensors", "mdi:solar-power-variant-outline", None),
+    (r"^heating\.solar\.rechargeSuppression", "mdi:battery-off-outline", None),
+    (r"^heating\.solar\.power", "mdi:solar-power-variant", None),
+    (r"^heating\.solar", "mdi:white-balance-sunny", "mdi:weather-night"),
+    (r"^heating\.boiler\.(sensors\.)?temperature", "mdi:thermometer-water", None),
+    (r"gas", "mdi:meter-gas-outline", None),
+    (r"power\.consumption", "mdi:flash", None),
+    (r"\.curve", "mdi:chart-bell-curve-cumulative", None),
+]
+
+_ICON_RULES = [(re.compile(rule), on, off) for rule, on, off in ICON_RULES]
+
+
+def icon_for(key: str) -> tuple[str | None, str | None]:
+    """Return the (icon, icon when off) for an entity key."""
+    for rule, on, off in _ICON_RULES:
+        if rule.search(key):
+            return on, off
+    return None, None
+
+
+# --------------------------------------------------------------------------
+# Home Assistant schedule helper mapping
+# --------------------------------------------------------------------------
+
+HELPER_DAYS = (
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+)
+
+
+def _helper_time(minutes: int) -> str:
+    return "24:00:00" if minutes >= MINUTES_PER_DAY else f"{format_time(minutes)}:00"
+
+
+def flatten_day(
+    entries: Iterable[dict[str, Any]],
+    default_mode: str,
+    modes: tuple[str, ...] = (),
+) -> list[tuple[int, int, str]]:
+    """Turn possibly overlapping entries into ordered, disjoint active ranges.
+
+    Where entries overlap, the mode listed later in modes wins (e.g. comfort
+    over normal).
+    """
+    items = [
+        (parse_time(e["start"]), parse_time(e["end"]), e.get("mode") or default_mode)
+        for e in entries
+    ]
+    bounds = sorted(
+        {0, MINUTES_PER_DAY, *(s for s, _, _ in items), *(e for _, e, _ in items)}
+    )
+    result: list[tuple[int, int, str]] = []
+    for start, end in zip(bounds, bounds[1:], strict=False):
+        active = [m for s, e, m in items if s <= start < e]
+        if not active:
+            continue
+        mode = max(active, key=lambda m: modes.index(m) if m in modes else -1)
+        if mode == default_mode:
+            continue
+        if result and result[-1][1] == start and result[-1][2] == mode:
+            result[-1] = (result[-1][0], end, mode)
+        else:
+            result.append((start, end, mode))
+    return result
+
+
+def entries_to_helper(
+    entries: dict[str, Any] | None, spec: ScheduleSpec
+) -> dict[str, list[dict[str, Any]]]:
+    """Convert a device week program into the schedule helper format."""
+    entries = entries or {}
+    result: dict[str, list[dict[str, Any]]] = {}
+    for short, long in zip(WEEKDAYS, HELPER_DAYS, strict=True):
+        ranges = []
+        for start, end, mode in flatten_day(
+            entries.get(short) or [], spec.default_mode, spec.modes
+        ):
+            item: dict[str, Any] = {
+                "from": _helper_time(start),
+                "to": _helper_time(end),
+            }
+            if len(spec.modes) > 1:
+                item["data"] = {"mode": mode}
+            ranges.append(item)
+        result[long] = ranges
+    return result
+
+
+def _helper_minutes(value: Any) -> int:
+    text = str(value)
+    hours, minutes = text.split(":")[:2]
+    return int(hours) * 60 + int(minutes)
+
+
+def normalize_helper(
+    item: dict[str, Any], spec: ScheduleSpec
+) -> dict[str, list[dict[str, Any]]]:
+    """Return the comparable week of a schedule helper item."""
+    return entries_to_helper(helper_to_entries(item, spec, strict=False), spec)
+
+
+def helper_to_entries(
+    item: dict[str, Any], spec: ScheduleSpec, strict: bool = True
+) -> dict[str, list[dict[str, Any]]]:
+    """Convert a schedule helper item into a device week program.
+
+    Times are aligned to the resolution of the device. With strict, a program
+    the device cannot store raises ScheduleError.
+    """
+    fallback = spec.modes[0] if spec.modes else "on"
+    week: dict[str, list[dict[str, Any]]] = {}
+    for short, long in zip(WEEKDAYS, HELPER_DAYS, strict=True):
+        day = []
+        for time_range in item.get(long) or []:
+            start = floor_to(_helper_minutes(time_range["from"]), spec.resolution)
+            end = min(
+                ceil_to(_helper_minutes(time_range["to"]), spec.resolution),
+                MINUTES_PER_DAY,
+            )
+            if end <= start:
+                continue
+            mode = (time_range.get("data") or {}).get("mode")
+            if mode not in spec.modes:
+                mode = fallback
+            day.append(
+                {"start": format_time(start), "end": format_time(end), "mode": mode}
+            )
+        week[short] = merge_intervals(day) if day else []
+    if strict:
+        return validate_schedule(week, spec)
+    return week
+
+
+# Entities of the core integration, mapped by their unique id suffix.
+_CORE_KEY_GROUPS: list[tuple[re.Pattern[str], str]] = [
+    (
+        re.compile(r"(dhw|domestic_hot_water)_?circulation"),
+        GROUP_CIRCULATION,
+    ),
+    (re.compile(r"^(solar|collector)"), GROUP_SOLAR),
+    (
+        re.compile(r"dhw|hotwater|hot_water|charging|onetimecharge|one_time_charge"),
+        GROUP_DHW,
+    ),
+    (re.compile(r"^buffer"), GROUP_BUFFER),
+    (
+        re.compile(
+            r"^(ventilation|quickmode|filter|supply_fan|exhaust|extract|pm\d"
+            r"|supply_humidity|supply_temperature$)"
+        ),
+        GROUP_VENTILATION,
+    ),
+    (
+        re.compile(
+            r"^(boiler|burner|compressor|condenser|evaporator|inverter|heating_rod"
+            r"|hot_gas|suction_gas|liquid_gas|primary_circuit|secondary_circuit"
+            r"|return_temperature|volumetric_flow|hydraulic_separator"
+            r"|supply_pressure|cop_|spf_|gas_|power[ _]consumption|power_production"
+            r"|energy_|fuel_need)"
+        ),
+        GROUP_GENERATOR,
+    ),
+]
+
+_GENERATOR_COMPONENTS = ("burner", "compressor", "condens", "evaporator", "inverter")
+
+
+def core_group(key: str, component_kind: str | None, component_id: Any) -> str:
+    """Return the group of a core entity from its key and component."""
+    kind = (component_kind or "").lower()
+    if "circuit" in kind and component_id is not None:
+        return f"circuit_{component_id}"
+    if any(part in kind for part in _GENERATOR_COMPONENTS):
+        return GROUP_GENERATOR
+    if key.isdigit():
+        # The water heater uses the circuit id as key.
+        return GROUP_DHW
+    for pattern, group in _CORE_KEY_GROUPS:
+        if pattern.search(key):
+            return group
+    return GROUP_SYSTEM

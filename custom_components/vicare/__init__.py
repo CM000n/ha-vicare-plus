@@ -27,7 +27,7 @@ from homeassistant.components.application_credentials import (
 )
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.const import CONF_CLIENT_ID, CONF_PASSWORD, CONF_TOKEN, CONF_USERNAME
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import (
     ConfigEntryAuthFailed,
     ConfigEntryNotReady,
@@ -56,8 +56,10 @@ from .const import (
     VIESSMANN_DEVELOPER_PORTAL,
 )
 from .coordinator import ViCareCoordinator
+from .plus.logic import is_duplicate
 from .plus.overrides import ScheduleOverrideManager
 from .plus.runtime import PLUS_DATA, PlusRuntime
+from .plus.schedule_sync import ScheduleSync
 from .plus.services import async_setup_services
 from .types import ViCareConfigEntry, ViCareData, ViCareDevice
 from .utils import get_device_serial
@@ -237,26 +239,58 @@ async def async_setup_entry(hass: HomeAssistant, entry: ViCareConfigEntry) -> bo
     return True
 
 
+@callback
+def _async_remove_duplicates(
+    hass: HomeAssistant, entry: ViCareConfigEntry, runtime: PlusRuntime
+) -> None:
+    """Remove plus entities that duplicate a core entity.
+
+    Older versions created them disabled, the core entity has the longer history.
+    """
+    entity_registry = er.async_get(hass)
+    contexts = {f"{ctx.identifier}-plus-": ctx for ctx in runtime.devices}
+    for reg_entry in er.async_entries_for_config_entry(entity_registry, entry.entry_id):
+        for prefix, ctx in contexts.items():
+            if reg_entry.unique_id.startswith(prefix) and is_duplicate(
+                reg_entry.unique_id.removeprefix(prefix), ctx.features
+            ):
+                _LOGGER.info("Removing duplicate entity %s", reg_entry.entity_id)
+                entity_registry.async_remove(reg_entry.entity_id)
+                break
+
+
 async def _async_setup_plus(
     hass: HomeAssistant, entry: ViCareConfigEntry, runtime: PlusRuntime
 ) -> None:
     """Discover all API features and prepare the ViCare Plus state."""
-    await hass.async_add_executor_job(
-        runtime.build_devices, entry.runtime_data.devices
-    )
+    await hass.async_add_executor_job(runtime.build_devices, entry.runtime_data.devices)
     for ctx in runtime.devices:
         coordinator = ctx.device.coordinator
         if coordinator is None:
             continue
         await hass.async_add_executor_job(runtime.update_trackers, ctx)
         entry.async_on_unload(
-            coordinator.async_add_value_reader(
-                partial(runtime.update_trackers, ctx)
-            )
+            coordinator.async_add_value_reader(partial(runtime.update_trackers, ctx))
+        )
+    _async_remove_duplicates(hass, entry, runtime)
+    # Sub-devices link to the main device, which must exist before them.
+    device_registry = dr.async_get(hass)
+    for ctx in runtime.devices:
+        model = ctx.device.config.getModel().replace("_", " ")
+        device_registry.async_get_or_create(
+            config_entry_id=entry.entry_id,
+            identifiers={(DOMAIN, ctx.identifier)},
+            name=model,
+            manufacturer="Viessmann",
+            model=model,
         )
     hass.data.setdefault(PLUS_DATA, {})[entry.entry_id] = runtime
     runtime.overrides = ScheduleOverrideManager(hass, runtime)
     await runtime.overrides.async_load()
+    if runtime.sync_schedules:
+        sync = ScheduleSync(hass, runtime)
+        if await sync.async_start():
+            entry.async_on_unload(sync.async_stop)
 
 
 async def _async_register_zigbee_gateway_devices(

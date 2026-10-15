@@ -25,7 +25,9 @@ from homeassistant.util import dt as dt_util
 
 from ..const import (
     CONF_CYCLING_THRESHOLD,
+    CONF_RETURN_TEMPERATURE,
     CONF_SCAN_INTERVAL,
+    CONF_SYNC_SCHEDULES,
     DEFAULT_CACHE_DURATION,
     DEFAULT_CYCLING_THRESHOLD,
     DOMAIN,
@@ -143,6 +145,16 @@ class PlusRuntime:
             self.entry.options.get(CONF_CYCLING_THRESHOLD, DEFAULT_CYCLING_THRESHOLD)
         )
 
+    @property
+    def sync_schedules(self) -> bool:
+        """Return whether time programs are mirrored to schedule helpers."""
+        return bool(self.entry.options.get(CONF_SYNC_SCHEDULES, True))
+
+    @property
+    def return_entity(self) -> str | None:
+        """Return the external return temperature sensor, if configured."""
+        return self.entry.options.get(CONF_RETURN_TEMPERATURE) or None
+
     def record_api_call(self) -> None:
         """Record an API request. Called from executor threads."""
         self.api_calls.append(time.time())
@@ -195,10 +207,9 @@ class PlusRuntime:
             self.devices.append(ctx)
 
     def update_trackers(self, ctx: DeviceContext) -> None:
-        """Feed a fresh snapshot to the trackers. Runs in the executor."""
-        if not ctx.burners:
-            return
+        """Refresh the feature snapshot and feed the trackers. Runs in the executor."""
         features = get_features(ctx.api)
+        ctx.features = features
         now = dt_util.utcnow()
         for tracker in ctx.burners.values():
             tracker.update(features, now)
